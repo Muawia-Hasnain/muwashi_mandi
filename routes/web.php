@@ -123,3 +123,14 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])
         Route::post('/locations/tehsils', [\App\Http\Controllers\Admin\LocationController::class, 'storeTehsil'])->name('locations.tehsils.store');
         Route::delete('/locations/tehsils/{tehsil}', [\App\Http\Controllers\Admin\LocationController::class, 'destroyTehsil'])->name('locations.tehsils.destroy');
     });
+
+// ─── Deployment Route (Shared Hosting) ───
+Route::get('/deploy-system-muwashi', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true, '--seed' => true]);
+        \Illuminate\Support\Facades\Artisan::call('storage:link');
+        return "Database Migrated, Seeded & Storage Linked Successfully!";
+    } catch (\Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+});
