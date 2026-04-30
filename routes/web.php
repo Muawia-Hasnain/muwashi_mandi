@@ -133,33 +133,26 @@ Route::get('/clear-caches', function () {
     return 'Caches cleared.';
 });
 
-// ─── Super Fix Route (Shared Hosting) ───
+// ─── Super Fix Route (Fresh Start) ───
 Route::get('/fix-everything', function () {
     try {
-        // 1. Clear everything
+        // 1. Clear Caches
         \Illuminate\Support\Facades\Artisan::call('config:clear');
         \Illuminate\Support\Facades\Artisan::call('cache:clear');
         \Illuminate\Support\Facades\Artisan::call('view:clear');
         \Illuminate\Support\Facades\Artisan::call('route:clear');
 
-        // 2. Drop all tables to start fresh (Nuclear Fix - Explicit List)
-        \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
-        \Illuminate\Support\Facades\DB::statement('DROP TABLE IF EXISTS `ad_images`, `ads`, `categories`, `chats`, `messages`, `payments`, `users`, `sessions`, `migrations`, `password_reset_tokens`, `personal_access_tokens`, `districts`, `tehsils`, `hissa_requests`, `cache`, `cache_locks`, `jobs`, `job_batches`, `failed_jobs`');
-        \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
-
-        // 3. Run Migrations
+        // 2. Run Migrations
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
 
-        // 4. Seed Categories
+        // 3. Seed Everything (Categories, Locations, Admin, Sample Ads)
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+        
+        // Also seed Location specifically if not in main DatabaseSeeder
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'LocationSeeder', '--force' => true]);
         \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'CategorySeeder', '--force' => true]);
 
-        // 5. Seed Locations
-        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'LocationSeeder', '--force' => true]);
-
-        // 6. Seed Admin, Sellers, and Ads
-        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
-
-        return "✅ Everything Fixed! Database wiped and rebuilt successfully. Your site is now live with fresh data.";
+        return "✅ Success! Database rebuilt, Categories, Locations, and Sample Ads created. Your site is now 100% Live!";
     } catch (\Exception $e) {
         return "❌ Error: " . $e->getMessage();
     }
