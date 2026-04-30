@@ -147,7 +147,17 @@ Route::get('/fix-everything', function () {
             \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'CategorySeeder', '--force' => true]);
         }
 
-        return "✅ Everything Fixed! Cache cleared and Categories checked. Your site is ready.";
+        // 3. Seed Locations if empty
+        if (\App\Models\District::count() == 0) {
+            \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'LocationSeeder', '--force' => true]);
+        }
+
+        // 4. Seed Admin if no users exist
+        if (\App\Models\User::count() == 0) {
+            \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+        }
+
+        return "✅ Everything Fixed! Categories, Locations, and Admin checked. Caches cleared.";
     } catch (\Exception $e) {
         return "❌ Error: " . $e->getMessage();
     }
