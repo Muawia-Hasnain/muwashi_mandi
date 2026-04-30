@@ -133,26 +133,16 @@ Route::get('/clear-caches', function () {
     return 'Caches cleared.';
 });
 
-// ─── Super Fix Route (Fresh Start) ───
+// ─── Super Fix Route (Manual Import Mode) ───
 Route::get('/fix-everything', function () {
     try {
-        // 1. Clear Caches
+        // 1. Clear Caches only
         \Illuminate\Support\Facades\Artisan::call('config:clear');
         \Illuminate\Support\Facades\Artisan::call('cache:clear');
         \Illuminate\Support\Facades\Artisan::call('view:clear');
         \Illuminate\Support\Facades\Artisan::call('route:clear');
 
-        // 2. Run Migrations
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-
-        // 3. Seed Everything (Categories, Locations, Admin, Sample Ads)
-        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
-        
-        // Also seed Location specifically if not in main DatabaseSeeder
-        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'LocationSeeder', '--force' => true]);
-        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'CategorySeeder', '--force' => true]);
-
-        return "✅ Success! Database rebuilt, Categories, Locations, and Sample Ads created. Your site is now 100% Live!";
+        return "✅ Success! Caches cleared. Since you imported manually, your site should be ready now.";
     } catch (\Exception $e) {
         return "❌ Error: " . $e->getMessage();
     }
