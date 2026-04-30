@@ -127,9 +127,11 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])
 // ─── Deployment Route (Shared Hosting) ───
 Route::get('/deploy-system-muwashi', function () {
     try {
-        \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true, '--seed' => true]);
         \Illuminate\Support\Facades\Artisan::call('storage:link');
-        return "Database Migrated, Seeded & Storage Linked Successfully!";
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+        \Illuminate\Support\Facades\Artisan::call('route:clear');
+        \Illuminate\Support\Facades\Artisan::call('view:clear');
+        return "Storage Linked & Cache Cleared Successfully!";
     } catch (\Exception $e) {
         return "Error: " . $e->getMessage();
     }
