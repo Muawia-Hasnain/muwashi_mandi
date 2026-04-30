@@ -142,14 +142,9 @@ Route::get('/fix-everything', function () {
         \Illuminate\Support\Facades\Artisan::call('view:clear');
         \Illuminate\Support\Facades\Artisan::call('route:clear');
 
-        // 2. Drop all tables to start fresh (Nuclear Fix)
+        // 2. Drop all tables to start fresh (Nuclear Fix - Explicit List)
         \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
-        $tables = \Illuminate\Support\Facades\DB::select('SHOW TABLES');
-        $dbName = 'u665706972_muwashi_mandi';
-        $prop = "Tables_in_{$dbName}";
-        foreach ($tables as $table) {
-            \Illuminate\Support\Facades\Schema::dropIfExists($table->$prop);
-        }
+        \Illuminate\Support\Facades\DB::statement('DROP TABLE IF EXISTS `ad_images`, `ads`, `categories`, `chats`, `messages`, `payments`, `users`, `sessions`, `migrations`, `password_reset_tokens`, `personal_access_tokens`, `districts`, `tehsils`, `hissa_requests`');
         \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
 
         // 3. Run Migrations
