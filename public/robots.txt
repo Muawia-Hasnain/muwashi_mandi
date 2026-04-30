@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Directories
+Disallow: /admin/
+Disallow: /profile/
+Disallow: /messages/
+Disallow: /hissa-requests/
+Disallow: /payments/
+
+# Sitemap
+Sitemap: {{ url('sitemap.xml') }}
