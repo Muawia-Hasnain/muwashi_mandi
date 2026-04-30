@@ -142,22 +142,25 @@ Route::get('/fix-everything', function () {
         \Illuminate\Support\Facades\Artisan::call('view:clear');
         \Illuminate\Support\Facades\Artisan::call('route:clear');
 
-        // 2. Seed Categories if empty
+        // 2. Run Migrations (to create all tables with correct columns)
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+
+        // 3. Seed Categories if empty
         if (\App\Models\Category::count() == 0) {
             \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'CategorySeeder', '--force' => true]);
         }
 
-        // 3. Seed Locations if empty
+        // 4. Seed Locations if empty
         if (\App\Models\District::count() == 0) {
             \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'LocationSeeder', '--force' => true]);
         }
 
-        // 4. Seed Admin, Sellers, and Ads if no ads exist
+        // 5. Seed Admin, Sellers, and Ads if no ads exist
         if (\App\Models\Ad::count() == 0) {
             \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
         }
 
-        return "✅ Everything Fixed! Categories, Locations, and Ads checked. Caches cleared.";
+        return "✅ Everything Fixed! Database rebuilt, Categories, Locations, and Ads checked. Caches cleared.";
     } catch (\Exception $e) {
         return "❌ Error: " . $e->getMessage();
     }
