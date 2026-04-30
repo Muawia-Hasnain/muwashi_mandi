@@ -144,7 +144,7 @@ Route::get('/fix-everything', function () {
 
         // 2. Drop all tables to start fresh (Nuclear Fix - Explicit List)
         \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
-        \Illuminate\Support\Facades\DB::statement('DROP TABLE IF EXISTS `ad_images`, `ads`, `categories`, `chats`, `messages`, `payments`, `users`, `sessions`, `migrations`, `password_reset_tokens`, `personal_access_tokens`, `districts`, `tehsils`, `hissa_requests`');
+        \Illuminate\Support\Facades\DB::statement('DROP TABLE IF EXISTS `ad_images`, `ads`, `categories`, `chats`, `messages`, `payments`, `users`, `sessions`, `migrations`, `password_reset_tokens`, `personal_access_tokens`, `districts`, `tehsils`, `hissa_requests`, `cache`, `cache_locks`, `jobs`, `job_batches`, `failed_jobs`');
         \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
 
         // 3. Run Migrations
