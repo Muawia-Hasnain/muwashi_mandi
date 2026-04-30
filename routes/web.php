@@ -124,22 +124,34 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])
         Route::delete('/locations/tehsils/{tehsil}', [\App\Http\Controllers\Admin\LocationController::class, 'destroyTehsil'])->name('locations.tehsils.destroy');
     });
 
-// ─── Deployment Route (Shared Hosting) ───
-Route::get('/deploy-system-muwashi', function () {
+// ─── Cache Clear Helper (for shared hosting) ┇
+Route::get('/clear-caches', function () {
+    \Illuminate\Support\Facades\Artisan::call('cache:clear');
+    \Illuminate\Support\Facades\Artisan::call('config:clear');
+    \Illuminate\Support\Facades\Artisan::call('route:clear');
+    \Illuminate\Support\Facades\Artisan::call('view:clear');
+    return 'Caches cleared.';
+});
+
+// ─── Super Fix Route (Shared Hosting) ───
+Route::get('/fix-everything', function () {
     try {
-        // Manual storage link (exec disabled on shared hosting)
-        $target = storage_path('app/public');
-        $link = public_path('storage');
-        
-        if (!file_exists($link)) {
-            symlink($target, $link);
-        }
-        
+        // 1. Clear everything
         \Illuminate\Support\Facades\Artisan::call('config:clear');
-        \Illuminate\Support\Facades\Artisan::call('route:clear');
+        \Illuminate\Support\Facades\Artisan::call('cache:clear');
         \Illuminate\Support\Facades\Artisan::call('view:clear');
-        return "Storage Linked & Cache Cleared Successfully!";
+        \Illuminate\Support\Facades\Artisan::call('route:clear');
+
+        // 2. Run Migrations (without fresh to keep data)
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+
+        // 3. Seed Categories if empty
+        if (\App\Models\Category::count() == 0) {
+            \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'CategorySeeder', '--force' => true]);
+        }
+
+        return "✅ Everything Fixed! Categories populated, Migrations run, and Cache cleared. Go to home page now.";
     } catch (\Exception $e) {
-        return "Error: " . $e->getMessage();
+        return "❌ Error: " . $e->getMessage();
     }
 });
