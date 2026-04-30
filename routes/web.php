@@ -124,26 +124,3 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])
         Route::delete('/locations/tehsils/{tehsil}', [\App\Http\Controllers\Admin\LocationController::class, 'destroyTehsil'])->name('locations.tehsils.destroy');
     });
 
-// ─── Cache Clear Helper (for shared hosting) ┇
-Route::get('/clear-caches', function () {
-    \Illuminate\Support\Facades\Artisan::call('cache:clear');
-    \Illuminate\Support\Facades\Artisan::call('config:clear');
-    \Illuminate\Support\Facades\Artisan::call('route:clear');
-    \Illuminate\Support\Facades\Artisan::call('view:clear');
-    return 'Caches cleared.';
-});
-
-// ─── Super Fix Route (Manual Import Mode) ───
-Route::get('/fix-everything', function () {
-    try {
-        // 1. Clear Caches only
-        \Illuminate\Support\Facades\Artisan::call('config:clear');
-        \Illuminate\Support\Facades\Artisan::call('cache:clear');
-        \Illuminate\Support\Facades\Artisan::call('view:clear');
-        \Illuminate\Support\Facades\Artisan::call('route:clear');
-
-        return "✅ Success! Caches cleared. Since you imported manually, your site should be ready now.";
-    } catch (\Exception $e) {
-        return "❌ Error: " . $e->getMessage();
-    }
-});
