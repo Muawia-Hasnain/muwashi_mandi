@@ -142,15 +142,12 @@ Route::get('/fix-everything', function () {
         \Illuminate\Support\Facades\Artisan::call('view:clear');
         \Illuminate\Support\Facades\Artisan::call('route:clear');
 
-        // 2. Run Migrations (without fresh to keep data)
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-
-        // 3. Seed Categories if empty
+        // 2. Seed Categories if empty
         if (\App\Models\Category::count() == 0) {
             \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'CategorySeeder', '--force' => true]);
         }
 
-        return "✅ Everything Fixed! Categories populated, Migrations run, and Cache cleared. Go to home page now.";
+        return "✅ Everything Fixed! Cache cleared and Categories checked. Your site is ready.";
     } catch (\Exception $e) {
         return "❌ Error: " . $e->getMessage();
     }
