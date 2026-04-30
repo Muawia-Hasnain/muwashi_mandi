@@ -152,12 +152,12 @@ Route::get('/fix-everything', function () {
             \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'LocationSeeder', '--force' => true]);
         }
 
-        // 4. Seed Admin if no users exist
-        if (\App\Models\User::count() == 0) {
+        // 4. Seed Admin, Sellers, and Ads if no ads exist
+        if (\App\Models\Ad::count() == 0) {
             \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
         }
 
-        return "✅ Everything Fixed! Categories, Locations, and Admin checked. Caches cleared.";
+        return "✅ Everything Fixed! Categories, Locations, and Ads checked. Caches cleared.";
     } catch (\Exception $e) {
         return "❌ Error: " . $e->getMessage();
     }
