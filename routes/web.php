@@ -127,7 +127,14 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])
 // ─── Deployment Route (Shared Hosting) ───
 Route::get('/deploy-system-muwashi', function () {
     try {
-        \Illuminate\Support\Facades\Artisan::call('storage:link');
+        // Manual storage link (exec disabled on shared hosting)
+        $target = storage_path('app/public');
+        $link = public_path('storage');
+        
+        if (!file_exists($link)) {
+            symlink($target, $link);
+        }
+        
         \Illuminate\Support\Facades\Artisan::call('config:clear');
         \Illuminate\Support\Facades\Artisan::call('route:clear');
         \Illuminate\Support\Facades\Artisan::call('view:clear');
