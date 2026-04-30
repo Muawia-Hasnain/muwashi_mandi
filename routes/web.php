@@ -142,25 +142,29 @@ Route::get('/fix-everything', function () {
         \Illuminate\Support\Facades\Artisan::call('view:clear');
         \Illuminate\Support\Facades\Artisan::call('route:clear');
 
-        // 2. Run Migrations (to create all tables with correct columns)
+        // 2. Drop all tables to start fresh (Nuclear Fix)
+        \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
+        $tables = \Illuminate\Support\Facades\DB::select('SHOW TABLES');
+        $dbName = 'u665706972_muwashi_mandi';
+        $prop = "Tables_in_{$dbName}";
+        foreach ($tables as $table) {
+            \Illuminate\Support\Facades\Schema::dropIfExists($table->$prop);
+        }
+        \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
+
+        // 3. Run Migrations
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
 
-        // 3. Seed Categories if empty
-        if (\App\Models\Category::count() == 0) {
-            \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'CategorySeeder', '--force' => true]);
-        }
+        // 4. Seed Categories
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'CategorySeeder', '--force' => true]);
 
-        // 4. Seed Locations if empty
-        if (\App\Models\District::count() == 0) {
-            \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'LocationSeeder', '--force' => true]);
-        }
+        // 5. Seed Locations
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'LocationSeeder', '--force' => true]);
 
-        // 5. Seed Admin, Sellers, and Ads if no ads exist
-        if (\App\Models\Ad::count() == 0) {
-            \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
-        }
+        // 6. Seed Admin, Sellers, and Ads
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
 
-        return "✅ Everything Fixed! Database rebuilt, Categories, Locations, and Ads checked. Caches cleared.";
+        return "✅ Everything Fixed! Database wiped and rebuilt successfully. Your site is now live with fresh data.";
     } catch (\Exception $e) {
         return "❌ Error: " . $e->getMessage();
     }
